@@ -12,5 +12,5 @@ A High-Level Compiled Programming Language with elegance and efficiency all roll
 - [x] Function Return Statements
 - [x] Exit Values
 - [x] Inline Assembly
-- [ ] Catch Statements
+- [ ] Catch Statements (Low Priority)
 - [ ] Packages/Use Statement
