@@ -44,13 +44,8 @@ def getVar(key):
             for var in variables:
                 if var.key == key[1:]:
                     return var
-        else:
-            print('meep')
-            return Variable(key, str(key))
     else:
-        var = str(hex(len(variables) + 1)[2:])
-        variables.append(Variable('_' + var, str(int(key))))
-        return Variable('_' + var, str(int(key)))
+        return Variable(key, str(key))
 
 def parse(source):
     parsedScript = [[]]
@@ -59,17 +54,17 @@ def parse(source):
     inString = False
     inQuote = False
     for char in source:
-        if char in ('(', ';', '\n') and not inString and not inQuote:
+        if char in (';', '\n') and not inString and not inQuote:
             if word:
                 parsedScript[-1].append(word)
                 word = ''
             parsedScript.append([])
-        elif char == '[':
+        elif char == '(':
             parsedScript.append([])
             if word:
                 parsedScript[-1].append(word)
                 word = ''
-        elif char in (')', ']') and not inString and not inQuote:
+        elif char == ')' and not inString and not inQuote:
             if word:
                 parsedScript[-1].append(word)
                 word = ''
@@ -118,24 +113,33 @@ def turingCompile(function):
     for word in function.value:
         if len(word) > 1:
             if word[1] == '=':
-                #else:
-                #    if len(word) > 3:
-                #        if word[3] == '+':
-                #            var = getVar(word[2])
-                #            var2 = getVar(word[4])
-                #            compiledScript += '\tmov eax,' + var + '\n\tmov ebx,' + var2 + '\n\tadd eax,ebx\n\tmov [' + word[0]+ '],eax\n\tint 80h\n'
-                #        elif word[3] == '-':
-                #            var = getVar(word[2])
-                #            var2 = getVar(word[4])
-                #            compiledScript += '\tmov eax,' + var + '\n\tmov ebx,' + var2 + '\n\tsub eax,ebx\n\tmov [' + word[0] + '],eax\n\tint 80h\n'
-                #    else:
-                if isinstance(word[0], list):
-                    compiledScript += '\tmov ecx,' + word[0][0] + '\n\tadd ecx,' + word[0][1] + '\n\tmov ecx,' + word[2] + '\n\tmov [' + word[0][0] + '],ecx\n\tint 80h\n'
-                    #variables.append(Variable(word[0][0], word[2]))
+                if len(word) > 3:
+                    if word[3] == '+':
+                        var = getVar(word[2])
+                        var2 = getVar(word[4])
+                        if isinstance(word[0], list):
+                            compiledScript += '\tmov ecx,' + word[0][0] + '\n\tadd ecx,' + str(int(word[0][1]) + 1) + '\n\tmov eax,' + var.key + '\n\tmov ebx,' + var2.key + '\n\tadd eax,ebx\n\tmov [ecx],eax\n\tint 80h\n'
+                        else:
+                            compiledScript += '\tmov eax,' + var.key + '\n\tmov ebx,' + var2.key + '\n\tadd eax,ebx\n\tmov [' + word[0] + '],eax\n\tint 80h\n'
+                    elif word[3] == '-':
+                        var = getVar(word[2])
+                        var2 = getVar(word[4])
+                        if isinstance(word[0], list):
+                            compiledScript += '\tmov ecx,' + word[0][0] + '\n\tadd ecx,' + str(int(word[0][1]) + 1) + '\n\tmov eax,' + var.key + '\n\tmov ebx,' + var2.key + '\n\tsub eax,ebx\n\tmov [ecx],eax\n\tint 80h\n'
+                        else:
+                            compiledScript += '\tmov eax,' + var.key + '\n\tmov ebx,' + var2.key + '\n\tsub eax,ebx\n\tmov [' + word[0] + '],eax\n\tint 80h\n'
                 else:
-                    if not isinstance(word[2], list):
-                        compiledScript += '\tmov ecx,' + word[2] + '\n\tmov [' + word[0] + '],ecx\n\tint 80h\n'
-                    variables.append(Variable(word[0], word[2]))
+                    if isinstance(word[2], list):
+                        compiledScript += '\tmov ecx,' + word[0] + '\n'
+                        for item in word[2]:
+                            compiledScript += '\tadd ecx,1\n\tmov ebx,' + item + '\n\tmov [ecx],ebx\n\tint 80h\n'
+                        variables.append(Variable(word[0], word[2]))
+                    else:
+                        if isinstance(word[0], list):
+                            compiledScript += '\tmov ecx,' + word[0][0] + '\n\tadd ecx,' + str((int(word[0][1]) + 1)) + '\n\tmov ebx,' + word[2] + '\n\tmov [ecx],ebx\n\tint 80h\n'
+                        else:
+                            compiledScript += '\tmov ecx,' + word[2] + '\n\tmov [' + word[0] + '],ecx\n\tint 80h\n'
+                            variables.append(Variable(word[0], word[2]))
             elif word[0][0] == 'if':
                 if isinstance(word[0][1], list):
                     compiledScript += '\tmov ecx,' + getVar(word[0][1][0]) + '\n\tadd ecx,' + word[0][1][1] + '\n'
@@ -190,9 +194,9 @@ def turingCompile(function):
                 compiledScript += '\tmov eax,' + word[1] + '\n'
             elif word[0] == 'exit':
                 if isinstance(word[1], list):
-                    compiledScript += '\tmov ecx,' + word[1][0][1:] + '\n\tadd ecx,' + word[1][1] + '\n\tmov eax,1\n\tmov ebx,[ecx]\n\tint 80h\n'
+                    compiledScript += '\tmov ecx,' + word[1][0][1:] + '\n\tadd ecx,' + str(int(word[1][1]) + 1) + '\n\tmov eax,1\n\tmov ebx,[ecx]\n\tint 80h\n'
                 else:
-                    compiledScript += '\tmov eax,1\n\tmov ebx,[' + getVar(word[1]).key[1:] + ']\n\tint 80h\n'
+                    compiledScript += '\tmov eax,1\n\tmov ebx,[' + getVar(word[1]).key + ']\n\tint 80h\n'
             elif word[0] == 'asm':
                 compiledScript += word[1] + '\n'
         else:
@@ -217,29 +221,15 @@ for function in functions:
     else:
         asm += function.key + ':\n'
     asm += turingCompile(function)
-#asm += '\nsection .data\n'
-#for var in variables:
-#    if isinstance(var.value, list):
-        
-#for var in variables:
-#    if isinstance(var.value, list):
-#        asm += var.key + ':\n'
-#        for item in var.value:
-#            asm += '\tdb ' + item + '\n'
 asm += '\nsection .data\n'
 for var in variables:
-#    if isinstance(var.value, list):
-#        asm += '\nsection .data\n'
-    if isinstance(var.key, list):
-        asm += '\tglobal ' + var.key[0] + '\n' + var.key[0] + ':\n'
+    asm += '\tglobal ' + var.key + '\n' + var.key + ':\n'
+    if isinstance(var.value, list):
+        for item in var.value:
+            asm += '\tdb ' + item + '\n'
     else:
-        asm += '\tglobal ' + var.key + '\n' + var.key + ':\n'
-    for item in var.value:
         asm += '\tdb ' + item + '\n'
-    #else:
-    #    asm += '\t' + var.key + ' resb 1\n'
 
-print(variables)
 print(asm)
 
 os.system('echo "' + asm + '" > ' + sys.argv[1].split('.')[0] + '.asm')
