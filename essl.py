@@ -20,18 +20,6 @@ import os
 
 functions = []
 variables = []
-ifequFunc = '%macro ifequ 3\n\tmov ecx,[%1]\n\tcmp ecx,[%2]\n\tje %3\n\tint 80h\n%endmacro\n\n'
-ifequsFunc = '%macro ifequs 4\n\tmov esi,%1\n\tmov edi,%2\n\tmov ecx,%3\n\tcld\n\trepe cmpsb\n\tjecxz %4\n\tint 80h\n%endmacro\n\n'
-ifneFunc = '%macro ifne 3\n\tmov ecx,[%1]\n\tcmp ecx,[%2]\n\tjne %3\n\tint 80h\n%endmacro\n\n'
-ifnesFunc = '%macro ifnes 4\n\tmov esi,%1\n\tmov edi,%2\n\tmov ecx,%3\n\tcld\n\trepe cmpsb\n\tjne %4\n\tint 80h\n%endmacro\n\n'
-ifgtFunc = '%macro ifgt 3\n\tmov ecx,[%1]\n\tcmp ecx,[%2]\n\tjg %3\n\tint 80h\n%endmacro\n\n'
-ifltFunc = '%macro iflt 3\n\tmov ecx,[%1]\n\tcmp ecx,[%2]\n\tjl %3\n\tint 80h\n%endmacro\n\n'
-ifgeFunc = '%macro ifge 3\n\tmov ecx,[%1]\n\tcmp ecx,[%2]\n\tjge %3\n\tint 80h\n%endmacro\n\n'
-ifleFunc = '%macro ifle 3\n\tmov ecx,[%1]\n\tcmp ecx,[%2]\n\tjle %3\n\tint 80h\n%endmacro\n\n'
-ifFuncs = [ifequFunc, ifequsFunc, ifneFunc, ifnesFunc, ifgtFunc, ifltFunc, ifgeFunc, ifleFunc]
-printFunc = '%macro print 2\n\tmov edx,%2\n\tmov ecx,%1\n\tmov ebx,1\n\tmov eax,4\n\tint 80h\n%endmacro\n\n'
-readFunc = '%macro read 1\n\tmov eax,3\n\tmov ebx,2\n\tmov ecx,%1\n\tmov edx,5\n\tint 80h\n%endmacro\n\n'
-exitFunc = '%macro exit 1\n\tmov eax,1\n\tmov ebx,%1\n\tint 80h\n%endmacro\n\n'
 
 # Define Variable Object
 class Variable(object):
@@ -42,10 +30,13 @@ class Variable(object):
 # Get Variable. If non-existant, return string
 def getVar(key):
     if key[0] == '%':
-        if key[1:] in variables:
-            for var in variables:
-                if var.key == key[1:]:
-                    return var
+        try:
+            return '[esp + ' + str(int(key[1:]*4)) + ']'
+        except ValueError:
+            if key[1:] in variables:
+                for var in variables:
+                    if var.key == key[1:]:
+                        return var
     else:
         return Variable(key, str(key))
 
@@ -291,12 +282,14 @@ def turingCompile(function):
         else:
             
             # Call the main function
-            if word[0][0] == 'main':
+            if word[0] == 'main':
                 compiledScript += '\tcall _start\n'
                 
             # Call other function
             else:
-                compiledScript += '\tcall .' + word[0][0] + '\n'
+                for item in word[1:]:
+                    compiledScript += '\tpush ' + item + '\n'
+                compiledScript += '\tcall ' + word[0][0] + '\n'
     
     # Default exit '0'
     if function.key == 'main':
