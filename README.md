@@ -8,7 +8,7 @@ A High-Level Compiled Programming Language with elegance and efficiency all roll
 - [x] Conditionals
 - [x] Loops
 - [x] Basic Functions
-- [ ] Function Arguments
+- [x] Function Arguments
 - [x] Function Return Statements
 - [x] Exit Values
 - [x] Inline Assembly
