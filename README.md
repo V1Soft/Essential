@@ -4,7 +4,7 @@ A High-Level Compiled Programming Language with elegance and efficiency all roll
 - [x] Basic Arrays
 - [ ] Array Slices
 - [x] Basic Math
-- [ ] Math Order of Operations
+- [x] Math Order of Operations
 - [x] Conditionals
 - [x] Loops
 - [x] Basic Functions
@@ -12,5 +12,4 @@ A High-Level Compiled Programming Language with elegance and efficiency all roll
 - [x] Function Return Statements
 - [x] Exit Values
 - [x] Inline Assembly
-- [ ] Catch Statements (Low Priority)
-- [ ] Packages/Use Statement
+- [x] Packages/Use Statement
