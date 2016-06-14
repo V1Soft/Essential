@@ -1,3 +1,5 @@
+#! /usr/bin/python3
+
 #########################################################################
 # Copyright (C) 2016 ecoh70                                             #
 #                                                                       #
@@ -31,34 +33,70 @@ class Variable(object):
 def getVar(key):
     if key[0] == '%':
         try:
-            return '[esp + ' + str(int(key[1:]*4)) + ']'
+            return '[esp + ' + str(int(key[1:])*4) + ']'
         except ValueError:
-            if key[1:] in variables:
-                for var in variables:
-                    if var.key == key[1:]:
-                        return var
+            return key[1:]
+    elif key[0] == 'args' and key[1] in ('+', '-', '/', '*'):
+        msrc = key[1:]
+        i = len(msrc) - 1
+        mexp = []
+        masm = ''
+        while i > -1:
+            if not msrc[i] in ('+', '-', '*', '/'):
+                masm += recurse(msrc[i])
+                mexp.append(getVar(msrc[i]))
+            elif msrc[i] in ('+', '-', '/', '*'):
+                operand = mexp.pop()
+                operand2 = mexp.pop()
+                if msrc[i] == '+':
+                    masm += '\tadd eax,' + operand2 + '\n'
+                elif msrc[i] == '-':
+                    masm += '\tsub eax,' + operand2 + '\n'
+                elif msrc[i] == '*':
+                    masm += '\timul eax,' + operand2 + '\n'
+                elif msrc[i] == '/':
+                    masm += '\tidiv eax,' + operand2 + '\n'
+                mexp.append('eax')
+            i -= 1
+        return ['math', masm]
     else:
-        return Variable(key, str(key))
-
+        if key == 'null':
+            return '0x00'
+        elif key == 'true':
+            return '1'
+        elif key == 'false':
+            return '0'
+        else:
+            return key
+        
 # Parse the Essential Script
 def parse(source):
     parsedScript = [[]]
     word = ''
-    inNode = False
+    prevChar = ''
+    inArgs = False
+    inList = False
     inString = False
     inQuote = False
     for char in source:
-        if char in (';', '\n') and not inString and not inQuote:
+        if char == '(' and not inString and not inQuote:
+            parsedScript.append([])
+            parsedScript[-1].append('args')
+            if word:
+                parsedScript[-1].append(word)
+                word = ''
+        elif char in (';', '\n') and not inString and not inQuote:
             if word:
                 parsedScript[-1].append(word)
                 word = ''
             parsedScript.append([])
-        elif char == '(':
+        elif char == '[':
             parsedScript.append([])
+            parsedScript[-1].append('list')
             if word:
                 parsedScript[-1].append(word)
                 word = ''
-        elif char == ')' and not inString and not inQuote:
+        elif char in (')', ']') and not inString and not inQuote:
             if word:
                 parsedScript[-1].append(word)
                 word = ''
@@ -68,12 +106,26 @@ def parse(source):
             if word:
                 parsedScript[-1].append(word)
                 word = ''
-        elif char == '\"':
+        elif char == '\"' and not prevChar == '\\':
             inString = not inString
-        elif char == '\'':
+        elif char == '\'' and not prevChar == '\\':
             inQuote = not inQuote
+        #elif char == '\\':
+        #    True
+        #elif char in ('n') and prevChar == '\\':
+        #    parsedScript[-1].append('0x0A')
+        #elif char in ('t') and prevChar == '\\':
+        #    parsedScript[-1].append('0x09')
+        #elif char in ('0') and prevChar == '\\':
+        #    parsedScript[-1].append('0x00')
+        elif char in ('+', '-', '*', '/'):
+            if word:
+                parsedScript[-1].append(word)
+                word = ''
+            parsedScript[-1].append(char)
         else:
             word += char
+            prevChar = char
     if word:
         parsedScript[-1].append(word)
         word = ''
@@ -82,7 +134,7 @@ def parse(source):
     # Parse multi-line code until 'end'
     for word in parsedScript:
         if word:
-            if word[0] in ('function', 'if', 'for', 'while'):
+            if word[0] in ('subroutine', 'if', 'for', 'while'):
                 reparsedScript.append([])
                 reparsedScript[-1].append(word)
             elif word[0] == 'end':
@@ -95,87 +147,119 @@ def parse(source):
 # Defining all variables
 def lex(parsedScript):
     lexedScript = parsedScript
-    print(lexedScript)
     index = 0
     for structure in parsedScript:
-        if structure[0][0] == 'function':
+        if structure[0] == 'use':
+            proto = ''
+            pkg = ''
+            if structure[1].startswith('.'):
+                proto = structure[1][1:]
+            else:
+                proto = '/' + structure[1]
+            for char in proto:
+                if char == '.':
+                    pkg += '/'
+                elif char == '/':
+                    print('Error: Invalid Syntax.')
+                    sys.exit(1)
+                else:
+                    pkg += char
+            lex(parse(open(pkg + '.essl', 'r+').read()))
+        elif structure[0][0] == 'subroutine':
             functions.append(Variable(structure[0][1], structure[1:]))
             lexedScript[index].remove(structure[0])
         index += 1
 
+def recurse(source):
+    compiledScript = ''
+    if source[0] == 'args' and not source[1] in ('+', '-', '*', '/'):
+        for arg in source[2:]:
+            if isinstance(arg, list):
+                compiledScript += recurse(arg) + '\tpush eax\n'
+            else:
+                compiledScript += '\tpush ' + getVar(arg) + '\n'
+        compiledScript += '\tcall ' + source[1] + '\n'
+    else:
+        if isinstance(getVar(source), list):
+            if getVar(source)[0] == 'math':
+                compiledScript += getVar(source)[1]
+        #else:
+        #    compiledScript += getVar(source)# + '\n'
+    return compiledScript
+        
 # Compile the script into assembly
 def turingCompile(function):
     compiledScript = ''
     ifs = 0
     whiles = 0
     for word in function.value:
-        if len(word) > 1:
+        if len(word) >= 1:
+            if word[0][-2:] == '++':
+                compiledScript += '\tmov ecx,' + getVar(word[0][:-2]) + '\n\tinc ecx\n\tmov [' + getVar(word[0][:-2]) + '],ecx\n\tint 80h\n'
             
             # Setting a variable
-            if word[1] == '=':
-                
-                # Math Operations
-                if len(word) > 3:
-                    
-                    # Add
-                    if word[3] == '+':
-                        var = getVar(word[2])
-                        var2 = getVar(word[4])
+            elif word[1] == '=':
+
+                if len(word) > 2:
+
+                    # Define return value
+                    if isinstance(word[2], list):
+                        compiledScript += recurse(word[2])
                         
                         # Define an array segment
                         if isinstance(word[0], list):
-                            compiledScript += '\tmov ecx,' + word[0][0] + '\n\tadd ecx,' + str(int(word[0][1]) + 1) + '\n\tmov eax,' + var.key + '\n\tmov ebx,' + var2.key + '\n\tadd eax,ebx\n\tmov [ecx],eax\n\tint 80h\n'
+                            if word[0][0] == 'list':
+                                compiledScript += '\tmov ecx,' + word[0][1] + '\n\tadd ecx,' + str((int(word[0][2]) + 1)) + '\n\tmov [ecx],eax\n'
+                                if not word[0][1] in variables:
+                                    variables.append(word[0][1])
                         
-                        # Define a normal variable
+                        # Define normal variable
                         else:
-                            compiledScript += '\tmov eax,' + var.key + '\n\tmov ebx,' + var2.key + '\n\tadd eax,ebx\n\tmov [' + word[0] + '],eax\n\tint 80h\n'
-                    
-                    # Subtract
-                    elif word[3] == '-':
-                        var = getVar(word[2])
-                        var2 = getVar(word[4])
-                        
-                        # Define an array segment
-                        if isinstance(word[0], list):
-                            compiledScript += '\tmov ecx,' + word[0][0] + '\n\tadd ecx,' + str(int(word[0][1]) + 1) + '\n\tmov eax,' + var.key + '\n\tmov ebx,' + var2.key + '\n\tsub eax,ebx\n\tmov [ecx],eax\n\tint 80h\n'
-                        
-                        # Define a normal variable
-                        else:
-                            compiledScript += '\tmov eax,' + var.key + '\n\tmov ebx,' + var2.key + '\n\tsub eax,ebx\n\tmov [' + word[0] + '],eax\n\tint 80h\n'
+                            compiledScript += '\tmov [' + word[0] + '],eax\n'
+                            if not word[0] in variables:
+                                variables.append(word[0])
                 else:
                     
                     # Define a list
                     if isinstance(word[2], list):
                         compiledScript += '\tmov ecx,' + word[0] + '\n'
                         for item in word[2]:
-                            compiledScript += '\tadd ecx,1\n\tmov ebx,' + item + '\n\tmov [ecx],ebx\n\tint 80h\n'
-                        variables.append(Variable(word[0], word[2]))
+                            compiledScript += '\tadd ecx,1\n\tmov ebx,' + getVar(item) + '\n\tmov [ecx],ebx\n\tint 80h\n'
+                        if not word[0] in variables:
+                            variables.append(word[0])
+                        
                     else:
                         
                         # Define an array segment
                         if isinstance(word[0], list):
-                            compiledScript += '\tmov ecx,' + word[0][0] + '\n\tadd ecx,' + str((int(word[0][1]) + 1)) + '\n\tmov ebx,' + word[2] + '\n\tmov [ecx],ebx\n\tint 80h\n'
+                            if word[0][0] == 'list':
+                                compiledScript += '\tmov ecx,' + word[0][1] + '\n\tadd ecx,' + str((int(word[0][2]) + 1)) + '\n\tmov ebx,' + getVar(word[2]) + '\n\tmov [ecx],ebx\n\tint 80h\n'
+                                if not word[0][1] in variables:
+                                    variables.append(word[0][1])
                         
                         # Define normal variable
                         else:
-                            compiledScript += '\tmov ecx,' + word[2] + '\n\tmov [' + word[0] + '],ecx\n\tint 80h\n'
-                            variables.append(Variable(word[0], word[2]))
+                            compiledScript += '\tmov ecx,' + getVar(word[2]) + '\n\tmov [' + word[0] + '],ecx\n\tint 80h\n'
+                            if not word[0] in variables:
+                                variables.append(word[0])
             
             # Conditional
             elif word[0][0] == 'if':
                 
                 # Compare an array
                 if isinstance(word[0][1], list):
-                    compiledScript += '\tmov ecx,' + getVar(word[0][1][0]) + '\n\tadd ecx,' + word[0][1][1] + '\n'
+                    if word[0][1][0] == 'list':
+                        compiledScript += '\tmov ecx,' + getVar(word[0][1][0]) + '\n\tadd ecx,' + getVar(word[0][1][1]) + '\n'
                 
                 # Compare a normal variable
                 else:
-                    var = getVar(word[0][1])
-                    compiledScript += '\tmov ecx,[' + var.key + ']\n'
+                    #var = getVar(word[0][1])
+                    compiledScript += '\tmov ecx,[' + getVar(word[0][1]).key + ']\n'
                 
                 # With an array
                 if isinstance(word[0][3], list):
-                    compiledScript += '\tmov ecx,' + getVar(word[0][3][0]) + '\n\tadd ecx,' + word[0][3][1] + '\n'
+                    if word[0][3][0] == 'list':
+                        compiledScript += '\tmov ecx,' + getVar(word[0][3][0]) + '\n\tadd ecx,' + getVar(word[0][3][1]) + '\n'
                 
                 # With a normal variable
                 else:
@@ -215,16 +299,20 @@ def turingCompile(function):
                 
                 # Compare an array
                 if isinstance(word[0][1], list):
-                    compiledScript += '\tmov ecx,' + getVar(word[0][1][0]) + '\n\tadd ecx,' + word[0][1][1] + '\n'
+                    if word[0][1][0] == 'list':
+                        var = getVar(word[0][1][0])
+                        compiledScript += '\tmov ecx,[' + var + ']\n\tadd ecx,' + getVar(word[0][1][1]) + '\n'
                 
                 # Compare a normal variable
                 else:
                     var = getVar(word[0][1])
-                    compiledScript += '\tmov ecx,[' + var.key + ']\n'
+                    compiledScript += '\tmov ecx,[' + var + ']\n'
                 
                 # With an array
                 if isinstance(word[0][3], list):
-                    compiledScript += '\tmov ecx,' + getVar(word[0][3][0]) + '\n\tadd ecx,' + word[0][3][1] + '\n'
+                    if word[0][3][0] == 'list':
+                        var = getVar(word[0][3][0])
+                        compiledScript += '\tmov ecx,' + var + '\n\tadd ecx,' + getVar(word[0][3][1]) + '\n'
                 
                 # With a normal variable
                 else:
@@ -235,73 +323,70 @@ def turingCompile(function):
                 
                 # EQUAL
                 if word[0][2] == '==':
-                    compiledScript += '\tmov ecx,[' + var.key + ']\n\tcmp ecx,[' + var2.key + ']\n\tje ' + iff + '\n\tint 80h\n'
+                    compiledScript += '\tmov ecx,[' + var + ']\n\tcmp ecx,[' + var2 + ']\n\tje ' + whilef + '\n\tint 80h\n'
                 
                 # NOT EQUAL
                 elif word[0][2] == '!=':
-                    compiledScript += '\tmov ecx,[' + var.key + ']\n\tcmp ecx,[' + var2.key + ']\n\tjne ' + iff + '\n\tint 80h\n'
+                    compiledScript += '\tmov ecx,[' + var + ']\n\tcmp ecx,[' + var2 + ']\n\tjne ' + whilef + '\n\tint 80h\n'
                 
                 # GREATER THAN
                 elif word[0][2] == '>':
-                    compiledScript += '\tmov ecx,[' + var.key + ']\n\tcmp ecx,[' + var2.key + ']\n\tjg ' + iff + '\n\tint 80h\n'
+                    compiledScript += '\tmov ecx,[' + var + ']\n\tcmp ecx,[' + var2 + ']\n\tjg ' + whilef + '\n\tint 80h\n'
                 
                 # LESS THAN
                 elif word[0][2] == '<':
-                    compiledScript += '\tmov ecx,[' + var.key + ']\n\tcmp ecx,[' + var2.key + ']\n\tjl ' + iff + '\n\tint 80h\n'
+                    compiledScript += '\tmov ecx,[' + var + ']\n\tcmp ecx,[' + var2 + ']\n\tjl ' + whilef + '\n\tint 80h\n'
                 
                 # GREATER THAN OR EQUAL
                 elif word[0][2] == '>=':
-                    compiledScript += '\tmov ecx,[' + var.key + ']\n\tcmp ecx,[' + var2.key + ']\n\tjge ' + iff + '\n\tint 80h\n'
+                    compiledScript += '\tmov ecx,[' + var + ']\n\tcmp ecx,[' + var2 + ']\n\tjge ' + whilef + '\n\tint 80h\n'
                 
                 # LESS THAN OR EQUAL
                 elif word[0][2] == '<=':
-                    compiledScript += '\tmov ecx,[' + var.key + ']\n\tcmp ecx,[' + var2.key + ']\n\tjle ' + iff + '\n\tint 80h\n'
+                    compiledScript += '\tmov ecx,[' + var + ']\n\tcmp ecx,[' + var2 + ']\n\tjle ' + whilef + '\n\tint 80h\n'
                 whiles += 1
-                turingCompile(Variable('function', whilef, word[1:]))
-            
+                turingCompile(Variable(whilef, word[1:]))
+                functions.append(Variable(whilef, word[1:]))
+
             # Return a value
             elif word[0] == 'return':
-                compiledScript += '\tmov eax,' + word[1] + '\n'
-            
-            # System exit
-            elif word[0] == 'exit':
-                
-                # Exit with array segment
-                if isinstance(word[1], list):
-                    compiledScript += '\tmov ecx,' + word[1][0][1:] + '\n\tadd ecx,' + str(int(word[1][1]) + 1) + '\n\tmov eax,1\n\tmov ebx,[ecx]\n\tint 80h\n'
-                
-                # Exit with normal variable
+                if function.key == 'main':
+                    compiledScript += '\tmov eax,1\n\tmov ebx,[' + getVar(word[1]) + ']\n\tint 80h\n'
                 else:
-                    compiledScript += '\tmov eax,1\n\tmov ebx,[' + getVar(word[1]).key + ']\n\tint 80h\n'
-            
+                    if isinstance(getVar(word[1]), list):
+                        if getVar(word[1])[0] == 'math':
+                            compiledScript += getVar(word[1])[1]
+                    else:
+                        compiledScript += '\tmov eax,' + str(getVar(word[1])) + '\n'
+
             # Inline Assembly
             elif word[0] == 'asm':
                 compiledScript += word[1] + '\n'
-        
+
         # Call a function
-        else:
-            
-            # Call the main function
-            if word[0] == 'main':
-                compiledScript += '\tcall _start\n'
-                
-            # Call other function
             else:
-                for item in word[1:]:
-                    compiledScript += '\tpush ' + item + '\n'
-                compiledScript += '\tcall ' + word[0][0] + '\n'
+            
+                # Call the main function
+                if word[0] == 'main':
+                    compiledScript += '\tcall _start\n'
+                
+                # Call other function
+                else:
+                    for item in word[1:]:
+                        compiledScript += '\tpush ' + item + '\n'
+                    compiledScript += '\tcall ' + word[0] + '\n'
     
     # Default exit '0'
     if function.key == 'main':
         compiledScript += '\tmov eax,1\n\tmov ebx,0\n\tint 80h\n'
     
     # Loop 'while' functions
-    elif function.key[0] == 'L':
+    if function.key[0] == 'L':
         compiledScript += '\tloop ' + function.key + '\n'
     
     # Return normal functions
     else:
-        compiledScript += '\tint 80h\n\tret\n'
+        compiledScript += '\tret\n'
     return compiledScript
 asm = ''
 
@@ -321,18 +406,12 @@ for function in functions:
     asm += turingCompile(function)
     
 # Compile all variables
-asm += '\nsection .data\n'
+asm += '\nsection .bss\n'
 for var in variables:
-    asm += '\tglobal ' + var.key + '\n' + var.key + ':\n'
-    
-    # Define array segment
-    if isinstance(var.value, list):
-        for item in var.value:
-            asm += '\tdb ' + item + '\n'
-    
-    # Define normal variable
-    else:
-        asm += '\tdb ' + item + '\n'
+    asm += '\tglobal ' + var + '\n'
+for var in variables:
+    asm += var + ':\n'
+    asm += '\tresb 1\n'
 
 # Show final compilation
 print(asm)
