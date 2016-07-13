@@ -4,9 +4,9 @@ A **High-Level Compiled** Programming Language with **elegance** and **efficienc
 ## Dependencies  
 - [**Python**](https://www.python.org)
   - How to get **Python**:
-    - **pacman** ([**Arch Linux**](https://www.archlinux.org)) ``` $ sudo pacman -S python3 ```
-    - **apt** ([**Debian**](https://www.debian.org) or [similar](https://en.wikipedia.org/wiki/Deb_(file_format)), some distros claim it doesn't work) ``` $ sudo apt-get install python3 ```
-    - **yum** (**Red Hat** (or [**Fedora**](https://getfedora.org)) or [similar](https://en.wikipedia.org/wiki/RPM_Package_Manager)) ``` $ yum -y install python33 ```
+    - **pacman** ([**Arch Linux**](https://www.archlinux.org)) ` $ sudo pacman -S python3 `
+    - **apt** ([**Debian**](https://www.debian.org) or [similar](https://en.wikipedia.org/wiki/Deb_(file_format)), some distros claim it doesn't work) ` $ sudo apt-get install python3 `
+    - **yum** (**Red Hat** (or [**Fedora**](https://getfedora.org)) or [similar](https://en.wikipedia.org/wiki/RPM_Package_Manager)) ` $ yum -y install python33 `
     - **other**:
 ```
 $ wget https://www.python.org/ftp/python/3.4.5/Python-3.4.5.tar.xz
@@ -17,9 +17,9 @@ $ ./configure && make && make install
 ```
 - [**NASM**](http://www.nasm.us)
   - How to get **NASM**:
-    - **pacman** ([**Arch Linux**](https://www.archlinux.org)) ``` $ sudo pacman -S nasm ```
-    - **apt** ([**Debian**](https://www.debian.org) or [similar](https://en.wikipedia.org/wiki/Deb_(file_format)) ``` $ sudo apt-get install nasm ```
-    - **yum** (**Red Hat** (or [**Fedora**](https://getfedora.org)) or [similar](https://en.wikipedia.org/wiki/RPM_Package_Manager)) ``` $ yum -y install nasm ```
+    - **pacman** ([**Arch Linux**](https://www.archlinux.org)) ` $ sudo pacman -S nasm `
+    - **apt** ([**Debian**](https://www.debian.org) or [similar](https://en.wikipedia.org/wiki/Deb_(file_format)) ` $ sudo apt-get install nasm `
+    - **yum** (**Red Hat** (or [**Fedora**](https://getfedora.org)) or [similar](https://en.wikipedia.org/wiki/RPM_Package_Manager)) ` $ yum -y install nasm `
     - **other**:
 ```
 $ wget http://www.nasm.us/pub/nasm/releasebuilds/2.12.02/nasm-2.12.02.tar.xz  
