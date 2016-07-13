@@ -5,8 +5,10 @@ A **High-Level Compiled** Programming Language with **elegance** and **efficienc
 - [**Python**](https://www.python.org)
   - How to get Python:
     - *pacman* (**Arch Linux**) ``` $ sudo pacman -S python3 ```
-    - *apt* (**Debian* or similar, Some distros claim it doesn't work) ``` $ sudo apt-get install python3 ```
+    - *apt* (**Debian** or similar, some distros claim it doesn't work) ``` $ sudo apt-get install python3 ```
     - *yum* (**Red Hat** or similar) ``` $ yum -y install python33 ```
+- **nasm**
+- **ld**
 
 ## What is Essential?  
 Essential is a programming language geared toward **simplicity** and **convenience**. It specifically targets **data use**, and features *no* **typing system**.  
