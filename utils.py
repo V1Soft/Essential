@@ -37,3 +37,22 @@ def getVar(key):
             return '0'
         else:
             return key
+
+# Handle Recursion
+def recurse(source):
+    compiledScript = ''
+    if source[0] == 'args' and not source[1] in ('+', '-', '*', '/'):
+        for arg in source[2:]:
+            if isinstance(arg, list):
+                compiledScript += recurse(arg) + '\tpush eax\n'
+            else:
+                compiledScript += '\tpush ' + getVar(arg) + '\n'
+        compiledScript += '\tcall ' + source[1] + '\n'
+    else:
+        if isinstance(getVar(source), list):
+            if getVar(source)[0] == 'math':
+                compiledScript += getVar(source)[1]
+        #else:
+        #    compiledScript += getVar(source)# + '\n'
+    return compiledScript
+   
