@@ -19,10 +19,6 @@ def conditional(statement):
     # With a normal variable
     else:
         var2 = getVar(word[0][3])
-                    
-    # Define the 'if' function
-    iff = '.if' + str(hex(ifs)[2:])
-    functions.append(Variable(iff, word[1:]))
                 
     # EQUAL
     if word[0][2] == '==':
