@@ -1,5 +1,0 @@
-use .essential.print
-
-subroutine main
-	 print('Hello World!')
-end
