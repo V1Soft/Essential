@@ -8,8 +8,8 @@ def turingCompile(function):
     whiles = 0
     for word in function.value:
         if len(word) >= 1:
-            if word[0][-2:] == '++':
-                compiledScript += '\tmov ecx,' + getVar(word[0][:-2]) + '\n\tinc ecx\n\tmov [' + getVar(word[0][:-2]) + '],ecx\n\tint 80h\n'
+            #if word[0][-2:] == '++': # broken?
+            #    compiledScript += '\tmov ecx,' + getVar(word[0][:-2]) + '\n\tinc ecx\n\tmov [' + getVar(word[0][:-2]) + '],ecx\n\tint 80h\n'
             
             # Setting a variable
             elif word[1] == '=':
@@ -79,14 +79,7 @@ def turingCompile(function):
             
             # Return a value
             elif word[0] == 'return':
-                if function.key == 'main':
-                    compiledScript += '\tmov eax,1\n\tmov ebx,[' + getVar(word[1]) + ']\n\tint 80h\n'
-                else:
-                    if isinstance(getVar(word[1]), list):
-                        if getVar(word[1])[0] == 'math':
-                            compiledScript += getVar(word[1])[1]
-                    else:
-                        compiledScript += '\tmov eax,' + str(getVar(word[1])) + '\n'
+                
 
             # Inline Assembly
             elif word[0] == 'asm':
