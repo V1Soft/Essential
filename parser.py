@@ -10,7 +10,6 @@ def parse(source):
     for char in source:
         if char == '(' and not inString and not inQuote:
             parsedScript.append([])
-            parsedScript[-1].append('args')
             if word:
                 parsedScript[-1].append(word)
                 word = ''
@@ -21,21 +20,34 @@ def parse(source):
             parsedScript.append([])
         elif char == '[':
             parsedScript.append([])
-            parsedScript[-1].append('list')
             if word:
                 parsedScript[-1].append(word)
                 word = ''
-        elif char in (')', ']') and not inString and not inQuote:
+        elif char in ')' and not inString and not inQuote:
             if word:
                 parsedScript[-1].append(word)
                 word = ''
             temp = parsedScript.pop()
             parsedScript[-1].append(temp)
+            args_t = parsedScript[-1]
+            parsedScript.remove(args)
+            parsedScript[-1].append(classes.Args(args))
+        elif char == ']' and not inString and not inQuote:
+            if word:
+                parsedScript[-1].append(word)
+                word = ''
+            temp = parsedScript.pop()
+            parsedScript[-1].append(temp)
+            list_t = parsedScript[-1]
+            parsedScript.remove(list_t)
+            parsedScript[-1].append(classes.List(list_t))
         elif char in (' ', '\t') and not inString and not inQuote:
             if word:
                 parsedScript[-1].append(word)
                 word = ''
         elif char == '\"' and not prevChar == '\\':
+            if inString:
+                parsedScript[-1].append(classes.String(word))
             inString = not inString
         elif char == '\'' and not prevChar == '\\':
             inQuote = not inQuote
