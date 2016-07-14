@@ -56,22 +56,23 @@ def turingCompile(function):
                             compiledScript += '\tmov ecx,' + getVar(word[2]) + '\n\tmov [' + word[0] + '],ecx\n\tint 80h\n'
                             if not word[0] in variables:
                                 variables.append(word[0])
+                                
             # Conditional
-            elif word[0] == 'if':
+            elif word[0][0] == 'if':
                 
                 # Define the 'if' function
                 iff = '.if' + str(hex(ifs)[2:])
-                compiledScript += commands.loop(word)
+                compiledScript += commands.loop(word[1:])
                 ifs += 1
                 compiler.turingCompile(classes.Variable(iff, word[1:]))
                 functions.append(Variable(iff, word[1:]))
             
             # Loop
-            elif word[0] == 'while':
+            elif word[0][0] == 'while':
                                     
                 # Define 'while' function
                 whilef = '.L' + str(hex(whiles)[2:])
-                compiledScript += commands.conditional(word)
+                compiledScript += commands.conditional(word[1:])
                 whiles += 1
                 compiler.turingCompile(classes.Variable(whilef, word[1:]))
                 functions.append(classes.Variable(whilef, word[1:]))
