@@ -57,11 +57,15 @@ def turingCompile(function):
                             if not word[0] in variables:
                                 variables.append(word[0])
             
-            # Contitional
-            elif word[0] == 'if':
+            # Loop
+            elif word[0] == 'while':
+                                    
+                # Define 'while' function
+                whilef = '.L' + str(hex(whiles)[2:])
+                compiledScript += commands.conditional(word)
                 whiles += 1
-                turingCompile(classes.Variable(whilef, word[1:]))
-            functions.append(classes.Variable(whilef, word[1:]))
+                compiler.turingCompile(classes.Variable(whilef, word[1:]))
+                functions.append(classes.Variable(whilef, word[1:]))
             
             # Return a value
             elif word[0] == 'return':
