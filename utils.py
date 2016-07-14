@@ -24,7 +24,7 @@ def getVar(key):
                 elif msrc[i] == '*':
                     masm += '\timul eax,' + operand2 + '\n'
                 elif msrc[i] == '/':
-                    masm += '\tidiv eax,' + operand2 + '\n'
+                    masm += '\tidiv eax,' + operand2 + '\n' # doesn't work
                 mexp.append('eax')
             i -= 1
         return ['math', masm]
