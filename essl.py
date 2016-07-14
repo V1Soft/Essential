@@ -4,6 +4,9 @@ import sys
 import os
 
 import classes
+import parser
+import lexer
+import compiler
 
 functions = []
 variables = []
@@ -11,7 +14,7 @@ variables = []
 asm = ''
 
 # Parse and lex the file
-lex(parse(open(sys.argv[1], 'r+').read()))
+lexer.lex(parser.parse(open(sys.argv[1], 'r+').read()))
 
 # Compile all functions
 for function in functions:
@@ -23,7 +26,7 @@ for function in functions:
     # Define normal function
     else:
         asm += function.key + ':\n'
-    asm += turingCompile(function)
+    asm += compiler.turingCompile(function)
     
 # Compile all variables
 asm += '\nsection .bss\n'
