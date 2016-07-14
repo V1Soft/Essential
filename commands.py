@@ -73,10 +73,7 @@ def loop(statement):
     # With a normal variable
     else:
         var2 = getVar(word[0][3])
-                    
-    # Define 'while' function
-    whilef = '.L' + str(hex(whiles)[2:])
-                
+
     # EQUAL
     if word[0][2] == '==':
         compiledScript += '\tmov ecx,[' + var + ']\n\tcmp ecx,[' + var2 + ']\n\tje ' + whilef + '\n\tint 80h\n'
