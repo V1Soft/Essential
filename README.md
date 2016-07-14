@@ -74,4 +74,10 @@ end
 ```
 
 ## How do I start?
-**Documentation** is still in the works. While the **code** is **commented** explaining each **process**, it has recently become out of control. If you would like to help, let me know at software.vector1@gmail.com and wait until full, concise **documentation** is produced.  
+**Documentation** is still in the works. While the **code** is **commented** explaining each **process**, it has recently become out of control. If you would like to help, let me know at software.vector1@gmail.com and wait until full, concise **documentation** is produced.
+
+## How do I use the program
+Most likely, unless you are logged in as **root**, you will have to use ` sudo ` or similar, as it accesses your **local disk**.  
+The **syntax** is the following: ` sudo python3 essl.py <file> `
+
+No **command line options** are currently implemented; however, this may change in the near future.
