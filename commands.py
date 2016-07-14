@@ -43,7 +43,6 @@ def conditional(statement):
     # LESS THAN OR EQUAL TO
     elif word[0][2] == '<=':
         compiledScript += '\tcmp ecx,[' + var2.key + ']\n\tjle ' + iff + '\n\tint 80h\n'
-    ifs += 1
     return compiledScript
 
 def loop(statement):
@@ -93,3 +92,4 @@ def loop(statement):
     # LESS THAN OR EQUAL
     elif word[0][2] == '<=':
         compiledScript += '\tmov ecx,[' + var + ']\n\tcmp ecx,[' + var2 + ']\n\tjle ' + whilef + '\n\tint 80h\n'
+    return compiledScript
