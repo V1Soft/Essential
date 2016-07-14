@@ -6,6 +6,7 @@
 - **lexer.py**: **Lexer**
 - **commands.py**: **Statements Handler**
 - **utils.py**: Contains the needed **Utilities**
+- **classes.py**: Contains the needed **Classes**
 
 ## Main File
 
