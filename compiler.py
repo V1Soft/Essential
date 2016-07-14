@@ -57,6 +57,12 @@ def turingCompile(function):
                             if not word[0] in variables:
                                 variables.append(word[0])
             
+            # Contitional
+            elif word[0] == 'if':
+                whiles += 1
+                turingCompile(classes.Variable(whilef, word[1:]))
+            functions.append(classes.Variable(whilef, word[1:]))
+            
             # Return a value
             elif word[0] == 'return':
                 if function.key == 'main':
