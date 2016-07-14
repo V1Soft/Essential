@@ -3,14 +3,10 @@
 import sys
 import os
 
+import classes
+
 functions = []
 variables = []
-
-# Define Variable Object
-class Variable(object):
-    def __init__(self, key, value):
-        self.key = key
-        self.value = value
 
 # Get Variable. If non-existant, return string
 def getVar(key):
