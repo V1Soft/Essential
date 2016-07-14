@@ -8,26 +8,51 @@ A **High-Level Compiled** Programming Language with **elegance** and **efficienc
     - **apt** ([**Debian**](https://www.debian.org) or [similar](https://en.wikipedia.org/wiki/Deb_(file_format)), some distros claim it doesn't work) ` $ sudo apt-get install python3 `
     - **yum** (**Red Hat** ([**Fedora**](https://getfedora.org)) or [similar](https://en.wikipedia.org/wiki/RPM_Package_Manager)) ` $ yum -y install python33 `
     - **other**:
-```
-$ wget https://www.python.org/ftp/python/3.4.5/Python-3.4.5.tar.xz
-$ xz -d Python-3.4.5.tar.xz
-$ tar -xf Python-3.4.5.tar
-$ cd Python-3.4.5/
-$ ./configure && make && make install
-```
+      ```sh
+      $ wget https://www.python.org/ftp/python/3.4.5/Python-3.4.5.tar.xz
+      ```
+
+      ```sh
+      $ xz -d Python-3.4.5.tar.xz
+      ```
+
+      ```sh
+      $ tar -xf Python-3.4.5.tar
+      ```
+
+      ```sh
+      $ cd Python-3.4.5/
+      ```
+
+      ```sh
+      $ ./configure && make && make install
+      ```
+
 - [**NASM**](http://www.nasm.us)
   - How to get **NASM**:
     - **pacman** ([**Arch Linux**](https://www.archlinux.org)) ` $ sudo pacman -S nasm `
     - **apt** ([**Debian**](https://www.debian.org) or [similar](https://en.wikipedia.org/wiki/Deb_(file_format)) ` $ sudo apt-get install nasm `
     - **yum** (**Red Hat** ([**Fedora**](https://getfedora.org)) or [similar](https://en.wikipedia.org/wiki/RPM_Package_Manager)) ` $ yum -y install nasm `
     - **other**:
-```
-$ wget http://www.nasm.us/pub/nasm/releasebuilds/2.12.02/nasm-2.12.02.tar.xz  
-$ xz -d nasm-2.12.02.tar.xz  
-$ tar -xf nasm-2.12.02.tar  
-$ cd nasm-2.12.02  
-$ ./configure && make && make install  
-```
+      ```sh
+      $ wget http://www.nasm.us/pub/nasm/releasebuilds/2.12.02/nasm-2.12.02.tar.xz
+      ```
+      
+      ```sh
+      $ xz -d nasm-2.12.02.tar.xz
+      ```
+      
+      ```sh
+      $ tar -xf nasm-2.12.02.tar
+      ```
+      
+      ```sh
+      $ cd nasm-2.12.02
+      ```
+      
+      ```sh
+      $ ./configure && make && make install
+      ```
 
 ## What is Essential?  
 Essential is a programming language geared toward **simplicity** and **convenience**. It specifically targets **data use**, and features *no* **typing system**.  
