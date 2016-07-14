@@ -56,61 +56,7 @@ def turingCompile(function):
                             compiledScript += '\tmov ecx,' + getVar(word[2]) + '\n\tmov [' + word[0] + '],ecx\n\tint 80h\n'
                             if not word[0] in variables:
                                 variables.append(word[0])
-                
-            # Loop
-            elif word[0][0] == 'while':
-                
-                # Compare an array
-                if isinstance(word[0][1], list):
-                    if word[0][1][0] == 'list':
-                        var = getVar(word[0][1][0])
-                        compiledScript += '\tmov ecx,[' + var + ']\n\tadd ecx,' + getVar(word[0][1][1]) + '\n'
-                
-                # Compare a normal variable
-                else:
-                    var = getVar(word[0][1])
-                    compiledScript += '\tmov ecx,[' + var + ']\n'
-                
-                # With an array
-                if isinstance(word[0][3], list):
-                    if word[0][3][0] == 'list':
-                        var = getVar(word[0][3][0])
-                        compiledScript += '\tmov ecx,' + var + '\n\tadd ecx,' + getVar(word[0][3][1]) + '\n'
-                
-                # With a normal variable
-                else:
-                    var2 = getVar(word[0][3])
-                    
-                # Define 'while' function
-                whilef = '.L' + str(hex(whiles)[2:])
-                
-                # EQUAL
-                if word[0][2] == '==':
-                    compiledScript += '\tmov ecx,[' + var + ']\n\tcmp ecx,[' + var2 + ']\n\tje ' + whilef + '\n\tint 80h\n'
-                
-                # NOT EQUAL
-                elif word[0][2] == '!=':
-                    compiledScript += '\tmov ecx,[' + var + ']\n\tcmp ecx,[' + var2 + ']\n\tjne ' + whilef + '\n\tint 80h\n'
-                
-                # GREATER THAN
-                elif word[0][2] == '>':
-                    compiledScript += '\tmov ecx,[' + var + ']\n\tcmp ecx,[' + var2 + ']\n\tjg ' + whilef + '\n\tint 80h\n'
-                
-                # LESS THAN
-                elif word[0][2] == '<':
-                    compiledScript += '\tmov ecx,[' + var + ']\n\tcmp ecx,[' + var2 + ']\n\tjl ' + whilef + '\n\tint 80h\n'
-                
-                # GREATER THAN OR EQUAL
-                elif word[0][2] == '>=':
-                    compiledScript += '\tmov ecx,[' + var + ']\n\tcmp ecx,[' + var2 + ']\n\tjge ' + whilef + '\n\tint 80h\n'
-                
-                # LESS THAN OR EQUAL
-                elif word[0][2] == '<=':
-                    compiledScript += '\tmov ecx,[' + var + ']\n\tcmp ecx,[' + var2 + ']\n\tjle ' + whilef + '\n\tint 80h\n'
-                whiles += 1
-                turingCompile(Variable(whilef, word[1:]))
-                functions.append(Variable(whilef, word[1:]))
-
+            
             # Return a value
             elif word[0] == 'return':
                 if function.key == 'main':
