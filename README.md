@@ -72,6 +72,7 @@ subroutine main # A subroutine is a function, a just had a problem with the defi
   print("Hello World!\n")
 end
 ```
+NOTE: **Commenting** is not implemented as a **feature** quite yet. **Comment Punctuation** may change.
 
 ## How do I start?
 **Documentation** is still in the works. While the **code** is **commented** explaining each **process**, it has recently become out of control. If you would like to help, let me know at software.vector1@gmail.com and wait until full, concise **documentation** is produced.
