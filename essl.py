@@ -1,22 +1,5 @@
 #! /usr/bin/python3
 
-#########################################################################
-# Copyright (C) 2016 ecoh70                                             #
-#                                                                       #
-# This program is free software: you can redistribute it and/or modify  #
-# it under the terms of the GNU General Public License as published by  #
-# the Free Software Foundation, either version 3 of the License, or (at #
-# your option) any later version.                                       #
-#                                                                       #
-# This program is distributed in the hope that it will be useful, but   #
-# WITHOUT ANY WARRANTY; without even the implied warranty of            #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU     #
-# General Public License for more details.                              #
-#                                                                       #
-# You should have received a copy of the GNU General Public License     #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>. #
-#########################################################################
-
 import sys
 import os
 
@@ -110,14 +93,6 @@ def parse(source):
             inString = not inString
         elif char == '\'' and not prevChar == '\\':
             inQuote = not inQuote
-        #elif char == '\\':
-        #    True
-        #elif char in ('n') and prevChar == '\\':
-        #    parsedScript[-1].append('0x0A')
-        #elif char in ('t') and prevChar == '\\':
-        #    parsedScript[-1].append('0x09')
-        #elif char in ('0') and prevChar == '\\':
-        #    parsedScript[-1].append('0x00')
         elif char in ('+', '-', '*', '/'):
             if word:
                 parsedScript[-1].append(word)
