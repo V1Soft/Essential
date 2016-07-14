@@ -1,3 +1,0 @@
-subroutine print
-	   asm('\tmov edx,'%1'\n\tmov ecx,'%2'\n\tmov ebx,1\n\tmov eax,4\n\tint	0x80')
-end
