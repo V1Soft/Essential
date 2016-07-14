@@ -68,7 +68,7 @@ Currently, the **compiler** is problematic; however, eventually the following **
 ```
 use essl.system.io: print() # Actual Location may change
 
-subroutine main # A subroutine is a function, a just had a problem with the definition
+subroutine main # A subroutine is a function, I just had a problem with the definition
   print("Hello World!\n")
 end
 ```
