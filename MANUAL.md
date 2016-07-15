@@ -51,5 +51,4 @@ There are two **methods** contained in the **utilities file**.
 ## Classes
 - **Variable(2)** is the **variable object**. It is used to maintain generic **variables** for the **compiler**.
 - **Args(1)** is the **argument object**. It is used to maintain **functions' arguments** for **recurse(1)**.
-- **String(1)** is the **string object**. It is used to identify **strings**.
 - **List(1)** is the **list object**. It is used to identify **lists**.
