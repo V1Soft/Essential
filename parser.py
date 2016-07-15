@@ -46,8 +46,6 @@ def parse(source):
                 parsedScript[-1].append(word)
                 word = ''
         elif char == '\"' and not prevChar == '\\':
-            if inString:
-                parsedScript[-1].append(classes.String(word))
             inString = not inString
         elif char == '\'' and not prevChar == '\\':
             inQuote = not inQuote
