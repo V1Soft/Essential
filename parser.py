@@ -55,6 +55,10 @@ def parse(source):
                 word = ''
             word += char
         else:
+            if prevChar in ('=', '+', '-', '*', '/'):
+                if word:
+                    parsedScript[-1].append(word)
+                    word = ''
             word += char
             prevChar = char
     if word:
