@@ -9,16 +9,18 @@
 - **classes.py**: Contains the needed **Classes**
 
 ## Main File
-This is the **file** that connects the **project** and calls the **parser**, **lexer**, and **compiler**. It is the top layer of the **program**.  
+This is the **file** that connects the **project** and calls the **parser**, **lexer**, and **compiler**. It is the top **layer** of the **program**.  
 
 ## Parser
+The **parser converts** the **plain text source** into a **format** the **compiler** can read. It also **reparses** the already parsed **script** and searches for ` end ` **tags**. Currently, it does not **error check punctuation** and **syntax**, nor **handle comments**; however, this is planned in future **development**.
 
 ## Lexer
+The **lexer** cycles through the **script** in search of ` if `, ` while `, and ` subroutine ` **tags**, and **appends** them to the **variable list**.
 
 ## Statements Handler
 
 ## Utilities
-There are two? **methods** contained in the **utilities file**.
+There are two **methods** contained in the **utilities file**.
 - **getVar()** returns a corresponding **variable value**, if the **variable** doesn't exist, it returns a **string**  
   For example: 
   - ` %var ` will return ` 'var' `
