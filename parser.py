@@ -49,11 +49,11 @@ def parse(source):
             inString = not inString
         elif char == '\'' and not prevChar == '\\':
             inQuote = not inQuote
-        elif char in ('+', '-', '*', '/'):
+        elif char in ('=', '+', '-', '*', '/'):
             if word:
                 parsedScript[-1].append(word)
                 word = ''
-            parsedScript[-1].append(char)
+            word += char
         else:
             word += char
             prevChar = char
