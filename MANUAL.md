@@ -18,20 +18,25 @@ The **parser converts** the **plain text source** into a **format** the **compil
 The **lexer** cycles through the **script** in search of ` if `, ` while `, and ` subroutine ` **tags**, and **appends** them to the **variable list**.
 
 ## Statements Handler
+The **statements** handle Essential's **commands** and is used to **output** corresponding **code**. There are 3-4 **methods** in the **Commands File**.
+- **conditional(1)** handles ` if ` statements.
+- **loop(1)** handles ` while ` statements.
+- **returnvalue(2)** handles return values.
+- **asm(1)** handles **inline assembly**.
 
 ## Utilities
 There are two **methods** contained in the **utilities file**.
-- **getVar()** returns a corresponding **variable value**, if the **variable** doesn't exist, it returns a **string**  
+- **getVar(1)** returns a corresponding **variable value**, if the **variable** doesn't exist, it returns a **string**  
   For example: 
   - ` %var ` will return ` 'var' `
   - ` NotAVar ` will return ` 'NotAVar' `
 
-  **getVar()** also handles **mathematics** and **recursion**.  
+  **getVar(1)** also handles **mathematics** and **recursion**.  
   For **example**:
   - ` + 2 2 ` will return the corresponding **assembly code**.
   - ` function(functionAsArgument(argument)) ` will call the **recurse() function**.
 
-- **recurse()** handles **recursion** and generates corresponding **assembly code**.
+- **recurse(1)** handles **recursion** and generates corresponding **assembly code**.
   For **example**: ` function(functionAsArgument(argument)) `  
   Since **return values** in Essential are stored in the ` eax ` **register**, **the output** is as follows:
   
