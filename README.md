@@ -75,7 +75,7 @@ end
 NOTE: **Commenting** is not implemented as a **feature** quite yet. **Comment Punctuation** may change.
 
 ## How do I start?
-**Documentation** is still in the works. While the **code** is **commented** explaining each **process** and **documentation** via this **README** and the **MANUAL**, it is still not completely full and concise. If you would like to help, let me know at software.vector1@gmail.com and begin to review the **code**. If you have questions regarding the **code** or Essential in general, email me.
+**Documentation** is still in the works. While the **code** is **commented** explaining each **process** and **documentation** via this **README** and the **MANUAL**, it is still not completely full and concise. If you would like to help, let me know at software.vector1@gmail.com and begin to review the **code**. If you have questions regarding the **code** or Essential in general, please **email** me.
 
 ## How do I use the program?
 Most likely, unless you are logged in as **root**, you will have to use ` sudo ` or similar, as it accesses your **local disk**.  
