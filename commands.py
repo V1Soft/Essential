@@ -23,7 +23,27 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-# Not entirely sure these are sane...
+# TODO: Create classes for type
+
+# TODO: Create the following functions to use here and elsewhere:
+#LoadArray()
+#LoadVariable()
+
+# TODO: Separate conditional() into separate methods
+#ConditionalCompareEqual()
+#ConditionalCompareNotEqual()
+#ConditionalCompareGreater()
+#ConditionalCompareLess()
+#ConditionalCompareGreaterOrEqual()
+#ConditionalCompareLesserOrEqual()
+
+# TODO: Separate loop() into separate methods
+#LoopCompareEqual()
+#LoopCompareNotEqual()
+#LoopCompareGreater()
+#LoopCompareLess()
+#LoopCompareGreaterOrEqual()
+#LoopCompareLesserOrEqual()
 
 def conditional(statement):
     compiledScript = ''
